@@ -1,0 +1,99 @@
+main {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+main table {
+    margin: 0 auto;
+}
+
+
+table, tr, td, th, thead {
+    padding: 0;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+td, th {
+    border: black solid;
+    height: 20px;
+    width: 20px;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+
+section {
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+}
+
+/*#choose-ship {*/
+/*    display: flex;*/
+/*    align-items: flex-start;*/
+/*    flex-direction: column;*/
+/*    gap: 4px;*/
+
+/*    margin: 10px;*/
+/*}*/
+
+/*#rotate-ships-button {*/
+/*    margin: 10px;*/
+/*}*/
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.gameboard {
+    width: 500px;
+    height: 500px;
+}
+
+.ship-control {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 120px;
+}
+
+.ship-list {
+    display: flex;
+    gap: 5px;
+    margin: auto 0;
+}
+
+.btn {
+    align-self: flex-end;
+}
+
+.one-cell-ship-part {
+    background-color: blueviolet;
+}
+
+.two-cell-ship-part {
+    background-color: brown;
+}
+
+.three-cell-ship-part {
+    background-color: darkblue;
+}
+
+.four-cell-ship-part {
+    background-color: darkgreen;
+}
+
+.ship-part-preview {
+    background-color: gray;
+}
+

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Vanilla JS Battleship</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="container">
+    <div>
+        <table class="gameboard">
+            <thead>
+            <tr>
+                <td>&nbsp;</td>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+                <th>D</th>
+                <th>E</th>
+                <th>F</th>
+                <th>G</th>
+                <th>H</th>
+                <th>I</th>
+                <th>J</th>
+            </tr>
+            </thead>
+            <tbody id="gameboard">
+            </tbody>
+        </table>
+        <div class="ship-control">
+            <div id="choose-ship" class="ship-list">
+                <table id="one-cell-ship-icon" class="one-cell-ship-part">
+                    <tr>
+                        <th></th>
+                    </tr>
+                </table>
+                <table id="two-cell-ship-icon" class="two-cell-ship-part">
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </table>
+                <table id="three-cell-ship-icon" class="three-cell-ship-part">
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </table>
+                <table id="four-cell-ship-icon" class="four-cell-ship-part">
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </table>
+            </div>
+            <button id="rotate-ships-button" class="btn">Rotate ships</button>
+        </div>
+    </div>
+    <div>
+        <table class="gameboard">
+            <thead>
+            <tr>
+                <td>&nbsp;</td>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+                <th>D</th>
+                <th>E</th>
+                <th>F</th>
+                <th>G</th>
+                <th>H</th>
+                <th>I</th>
+                <th>J</th>
+            </tr>
+            </thead>
+            <tbody id="enemyGameboard">
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+<script type="module" src="script.js">
+</script>
+</html>
+
