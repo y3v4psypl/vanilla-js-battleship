@@ -1,7 +1,8 @@
-import {ships, initializeBattlefield, Battlefield, getRandomCoordinates} from './battlefield.js';
+import {ships, Battlefield, getRandomCoordinates, Coordinates} from './battlefield.js';
 import {Bot} from './bot.js';
 
-const enemyBattlefield = initializeBattlefield();
+const enemyBattlefield = new Battlefield();
+const ourBattlefield = new Battlefield();
 
 const gameboardId = 'gameboard';
 const enemyGameboardId = 'enemyGameboard';
@@ -84,7 +85,48 @@ const renderShip = (target: HTMLElement, size: number, boardId: string) => {
     return true;
 }
 
+const configureCell = () => {
+    const td = document.createElement('td');
+    td.addEventListener('mouseenter', showShipPreview);
+    td.addEventListener('mouseleave', clearShipPreview);
+    td.addEventListener('click', placeShip);
+    return td;
+}
+
+const renderTable = (battlefield: Battlefield, container: HTMLElement | null, cellConfigurator: CellConfigurator) => {
+    container?.querySelectorAll('*').forEach(n => n.remove());
+    battlefield.data.forEach((row, i) => {
+        const tr = document.createElement('tr');
+        container?.appendChild(tr);
+        const th = document.createElement('th');
+        tr.appendChild(th);
+        th.innerText = String(i + 1);
+        row.forEach((column, j) => {
+            const td = cellConfigurator();
+            tr.appendChild(td);
+            td.dataset.x = String(j);
+            td.dataset.y = String(i);
+            switch (column.size) {
+                case 1:
+                    td.className = 'one-cell-ship-part';
+                    break;
+                case 2:
+                    td.className = 'two-cell-ship-part';
+                    break;
+                case 3:
+                    td.className = 'three-cell-ship-part';
+                    break;
+                case 4:
+                    td.className = 'four-cell-ship-part';
+                    break;
+            }
+        })
+    })
+}
+
 const placeShip = (event: Event) => {
+    const target = event?.target as HTMLElement;
+    const coordinates: Coordinates = [Number(target.dataset.y), Number(target.dataset.x)]
     switch (shipSize) {
         case 1:
             if (oneCellShipsLeft === 0 ) {
@@ -107,11 +149,6 @@ const placeShip = (event: Event) => {
             }
             break;
     }
-
-
-    const target = event?.target as HTMLElement;
-    renderShip(target, shipSize, gameboardId);
-
     switch (shipSize) {
         case 1:
             oneCellShipsLeft--;
@@ -142,7 +179,13 @@ const placeShip = (event: Event) => {
             }
             break;
     }
-    shipSize = 0;
+
+
+    if (ourBattlefield.placeShip(coordinates, shipSize, isRotated)) {
+        renderTable(ourBattlefield, gameboard, configureCell)
+    }
+
+
 }
 
 const showShipPreview = (event: Event) => {
@@ -172,7 +215,7 @@ const findCells = (x: number, y: number, amount = shipSize, boardId: string) => 
         }
     }
 
-    return cellArray;
+    return cellArray
 }
 
 const clearShipPreview = (event: Event) => {
@@ -184,63 +227,9 @@ const clearShipPreview = (event: Event) => {
     });
 };
 
-const configureCell = () => {
-    const td = document.createElement('td');
-    td.addEventListener('mouseenter', showShipPreview);
-    td.addEventListener('mouseleave', clearShipPreview);
-    td.addEventListener('click', placeShip);
-    return td;
-}
 
-const renderTable = (container: HTMLElement | null, cellConfigurator: CellConfigurator) => {
-    for (let i = 0; i < 10; i++) {
-        const tr = document.createElement('tr');
-        container?.appendChild(tr);
-        const th = document.createElement('th');
-        tr.appendChild(th);
-        th.innerText = String(i + 1);
-        for (let j = 0; j < 10; j++) {
-            const td = cellConfigurator();
-            tr.appendChild(td);
-            td.dataset.x = String(j + 1);
-            td.dataset.y = String(i + 1);
-            td.dataset.taken = "0";
-        }
-    }
-}
-
-const renderTable2 = (battlefield: Battlefield, container: HTMLElement | null, cellConfigurator: CellConfigurator) => {
-    battlefield.forEach((row, i) => {
-        const tr = document.createElement('tr');
-        container?.appendChild(tr);
-        const th = document.createElement('th');
-        tr.appendChild(th);
-        th.innerText = String(i + 1);
-        row.forEach((column, j) => {
-            const td = cellConfigurator();
-            tr.appendChild(td);
-            td.dataset.x = String(j + 1);
-            td.dataset.y = String(i + 1);
-            switch (column.size) {
-                case 1:
-                    td.className = 'one-cell-ship-part';
-                    break;
-                case 2:
-                    td.className = 'two-cell-ship-part';
-                    break;
-                case 3:
-                    td.className = 'three-cell-ship-part';
-                    break;
-                case 4:
-                    td.className = 'four-cell-ship-part';
-                    break;
-            }
-        })
-    })
-}
-
-renderTable(gameboard, configureCell);
-renderTable2(enemyBattlefield, enemyGameboard, () => document.createElement('td'));
+renderTable(ourBattlefield, gameboard, configureCell);
+renderTable(enemyBattlefield, enemyGameboard, () => document.createElement('td'));
 
 
 type CellConfigurator = () => HTMLTableCellElement;

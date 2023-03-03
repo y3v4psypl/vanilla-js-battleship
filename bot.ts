@@ -1,22 +1,24 @@
-import * as BF from './battlefield.js';
+import {Battlefield, ships, getRandomCoordinates} from './battlefield.js';
 
 export class Bot {
-    private battlefield: BF.Battlefield;
+    private battlefield: Battlefield;
 
-    constructor(battlefield: BF.Battlefield) {
+    constructor(battlefield: Battlefield) {
         this.battlefield = battlefield;
     }
+
     placeShips = () => {
-        BF.ships.flat().forEach(ship => {
+        ships.flat().forEach(ship => {
             this.placeShip(ship._size);
         })
     }
 
 
     private placeShip = (size: number) => {
-        const coordinates = BF.getRandomCoordinates();
+        const coordinates = getRandomCoordinates();
+        const isRotated = Math.random() >= 0.5;
 
-        if (!BF.placeShip(coordinates, size, this.battlefield)) {
+        if (!this.battlefield.placeShip(coordinates, size, isRotated)) {
             this.placeShip(size);
         }
     }

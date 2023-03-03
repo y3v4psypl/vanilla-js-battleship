@@ -24,7 +24,7 @@ class Submarine extends Ship {
     _name = 'Submarine';
 }
 
-type Coordinates = [number, number];
+export type Coordinates = [number, number];
 
 export const getRandomCoordinates = (): Coordinates => {
     const randomVertical = Math.floor(Math.random() * 9);
@@ -39,56 +39,71 @@ export const ships = [
     [new Battleship()]
 ]
 
-const canPlaceShip = (coordinates: Coordinates, size: number, battlefield: Battlefield): boolean => {
-    const [vertical, horizontal] = coordinates;
+export class Battlefield {
+    public data: Array<Array<{taken: boolean; size?: number}>>
 
-    for (let i = 0; i < size; i++) {
-        const horizontalWithOffset: number = horizontal + i;
-        const columnValue = battlefield[vertical][horizontalWithOffset];
-        if (!columnValue || columnValue.taken) return false;
+    constructor() {
+        const battlefield = [];
+        for (let i = 0; i < 10; i++) {
+            battlefield.push([]);
+            for (let j = 0; j < 10; j++) {
+                // @ts-ignore
+                battlefield[i][j] = {taken: false}
+            }
+        }
+        this.data = battlefield;
     }
 
-    return true;
-}
-
-export const placeShip = (coordinates: Coordinates, size: number, battlefield: Battlefield): boolean => {
-    if (canPlaceShip(coordinates, size, battlefield)) {
+    canPlaceShip = (coordinates: Coordinates, size: number, isRotated: boolean, disallowNeighbours: boolean): boolean => {
         const [vertical, horizontal] = coordinates;
 
-        for (let i = 0; i < size; i++) {
-            const horizontalWithOffset: number = horizontal + i;
-            const columnValue = battlefield[vertical][horizontalWithOffset];
-
-            columnValue.taken = true;
-            columnValue.size = size;
+        if (isRotated) {
+            for (let i = 0; i < size; i++) {
+                const verticalWithOffset: number = vertical + i;
+                const columnValue = this.data[verticalWithOffset]?.[horizontal];
+                if (!columnValue || columnValue.taken) return false;
+            }
+        } else {
+            for (let i = 0; i < size; i++) {
+                const horizontalWithOffset: number = horizontal + i;
+                const columnValue = this.data[vertical][horizontalWithOffset];
+                if (!columnValue || columnValue.taken) return false;
+            }
         }
+
 
         return true;
     }
-    return false;
-}
+
+    placeShip = (coordinates: Coordinates, size: number, isRotated: boolean): boolean => {
+        if (this.canPlaceShip(coordinates, size, isRotated)) {
+            const [vertical, horizontal] = coordinates;
+
+            if (isRotated) {
+                for (let i = 0; i < size; i++) {
+                    const verticalWithOffset: number = vertical + i;
+                    const columnValue = this.data[verticalWithOffset][horizontal];
+
+                    columnValue.taken = true;
+                    columnValue.size = size;
+                }
+
+                return true;
+            } else {
+                for (let i = 0; i < size; i++) {
+                    const horizontalWithOffset: number = horizontal + i;
+                    const columnValue = this.data[vertical][horizontalWithOffset];
+
+                    columnValue.taken = true;
+                    columnValue.size = size;
+                }
+
+                return true;
+            }
 
 
-export const initializeBattlefield = (): Battlefield =>
-
-// new Array(10)
-// .fill(undefined)
-// .map(() => new Array(10)
-//     .fill(undefined)
-//     .map(() => ({taken: false})));
-
-{
-    const battlefield = [];
-    for (let i = 0; i < 10; i++) {
-        battlefield.push([]);
-        for (let j = 0; j < 10; j++) {
-            // @ts-ignore
-            battlefield[i][j] = {taken: false}
         }
+        return false;
     }
-    return battlefield;
 }
-
-export type Battlefield = Array<Array<{taken: boolean; size?: number}>>
-
 
