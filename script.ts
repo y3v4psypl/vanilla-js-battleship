@@ -1,4 +1,4 @@
-import {ships, Battlefield, getRandomCoordinates, Coordinates} from './battlefield.js';
+import {Battlefield, getRandomCoordinates, Coordinates} from './battlefield.js';
 import {Bot} from './bot.js';
 
 const enemyBattlefield = new Battlefield();
@@ -85,11 +85,26 @@ const renderShip = (target: HTMLElement, size: number, boardId: string) => {
     return true;
 }
 
-const configureCell = () => {
+const configureOurCell = () => {
     const td = document.createElement('td');
     td.addEventListener('mouseenter', showShipPreview);
     td.addEventListener('mouseleave', clearShipPreview);
     td.addEventListener('click', placeShip);
+    return td;
+}
+
+const configureEnemyCell = () => {
+    const td = document.createElement('td');
+    td.addEventListener('click', (event: Event) => {
+        const target = event.target as HTMLElement;
+        const coordinates: Coordinates = [Number(target.dataset.y), Number(target.dataset.x)];
+        console.log(coordinates);
+        enemyBattlefield.attack(coordinates);
+        ourBattlefield.attack(getRandomCoordinates());
+        renderTable(ourBattlefield, gameboard, configureOurCell)
+        renderTable(enemyBattlefield, enemyGameboard, configureEnemyCell);
+        renderTable(ourBattlefield, gameboard, configureOurCell);
+    });
     return td;
 }
 
@@ -120,13 +135,18 @@ const renderTable = (battlefield: Battlefield, container: HTMLElement | null, ce
                     td.className = 'four-cell-ship-part';
                     break;
             }
+
+            if (column.isAttacked) {
+                td.className = td.className + ' attack-icon'
+            }
         })
     })
 }
 
 const placeShip = (event: Event) => {
     const target = event?.target as HTMLElement;
-    const coordinates: Coordinates = [Number(target.dataset.y), Number(target.dataset.x)]
+    const coordinates: Coordinates = [Number(target.dataset.y), Number(target.dataset.x)];
+    const disallowNeighbours = false;
     switch (shipSize) {
         case 1:
             if (oneCellShipsLeft === 0 ) {
@@ -181,8 +201,8 @@ const placeShip = (event: Event) => {
     }
 
 
-    if (ourBattlefield.placeShip(coordinates, shipSize, isRotated)) {
-        renderTable(ourBattlefield, gameboard, configureCell)
+    if (ourBattlefield.placeShip(coordinates, shipSize, isRotated, disallowNeighbours)) {
+        renderTable(ourBattlefield, gameboard, configureOurCell)
     }
 
 
@@ -228,12 +248,15 @@ const clearShipPreview = (event: Event) => {
 };
 
 
-renderTable(ourBattlefield, gameboard, configureCell);
-renderTable(enemyBattlefield, enemyGameboard, () => document.createElement('td'));
+
+
+renderTable(ourBattlefield, gameboard, configureOurCell);
+renderTable(enemyBattlefield, enemyGameboard, configureEnemyCell);
 
 
 type CellConfigurator = () => HTMLTableCellElement;
 
+// добавить кнопку "начало игры", сброс расстановки кораблей
+// убрать повторение атак у бота
 
-// добавить боту рандомный переворот корабль и рандомную возможность отступов
-// codewars: убить хардкод
+// прятать поле боя

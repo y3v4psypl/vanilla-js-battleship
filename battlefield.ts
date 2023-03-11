@@ -1,7 +1,6 @@
 abstract class Ship {
     static _size: number;
     static _name: string;
-
 }
 
 class Battleship extends Ship {
@@ -40,7 +39,7 @@ export const ships = [
 ]
 
 export class Battlefield {
-    public data: Array<Array<{taken: boolean; size?: number}>>
+    public data: Array<Array<{taken: boolean; size?: number; isAttacked?: boolean}>>
 
     constructor() {
         const battlefield = [];
@@ -54,7 +53,13 @@ export class Battlefield {
         this.data = battlefield;
     }
 
-    canPlaceShip = (coordinates: Coordinates, size: number, isRotated: boolean, disallowNeighbours: boolean): boolean => {
+    attack = (coordinates: Coordinates) => {
+        const [vertical, horizontal] = coordinates;
+
+        this.data[vertical][horizontal].isAttacked = true;
+    }
+
+    canPlaceShip = (coordinates: Coordinates, size: number, isRotated: boolean): boolean => {
         const [vertical, horizontal] = coordinates;
 
         if (isRotated) {
@@ -75,35 +80,81 @@ export class Battlefield {
         return true;
     }
 
-    placeShip = (coordinates: Coordinates, size: number, isRotated: boolean): boolean => {
-        if (this.canPlaceShip(coordinates, size, isRotated)) {
+    placeShip = (coordinates: Coordinates, size: number, isRotated: boolean, disallowNeighbours: boolean): boolean => {
+        if (this.canPlaceShip(coordinates, size, isRotated, disallowNeighbours)) {
             const [vertical, horizontal] = coordinates;
 
-            if (isRotated) {
-                for (let i = 0; i < size; i++) {
-                    const verticalWithOffset: number = vertical + i;
-                    const columnValue = this.data[verticalWithOffset][horizontal];
-
-                    columnValue.taken = true;
-                    columnValue.size = size;
+                if (isRotated) {
+                    for (let i = 0; i < size; i++) {
+                        const verticalWithOffset: number = vertical + i;
+                        const columnValue = this.data[verticalWithOffset][horizontal];
+                        columnValue.taken = true;
+                        columnValue.isAttacked = false;
+                        columnValue.size = size;
+                    }
+                    return true;
+                } else {
+                    for (let i = 0; i < size; i++) {
+                        const horizontalWithOffset: number = horizontal + i;
+                        const columnValue = this.data[vertical][horizontalWithOffset];
+                        columnValue.taken = true;
+                        columnValue.isAttacked = false;
+                        columnValue.size = size;
+                    }
+                    return true;
                 }
-
-                return true;
-            } else {
-                for (let i = 0; i < size; i++) {
-                    const horizontalWithOffset: number = horizontal + i;
-                    const columnValue = this.data[vertical][horizontalWithOffset];
-
-                    columnValue.taken = true;
-                    columnValue.size = size;
-                }
-
-                return true;
-            }
-
 
         }
         return false;
     }
 }
 
+// canPlaceShip = (coordinates: Coordinates, size: number, isRotated: boolean, disallowNeighbours: boolean): boolean => {
+//     const [vertical, horizontal] = coordinates;
+//     if (disallowNeighbours) {
+//         if (isRotated) {
+//             const topBorderCenter = this.data[vertical - 1]?.[horizontal];
+//             const topBorderLeft = this.data[vertical - 1]?.[horizontal - 1];
+//             const topBorderRight = this.data[vertical - 1]?.[horizontal + 1];
+//             const bottomBorderCenter = this.data[vertical + size]?.[horizontal];
+//             const bottomBorderLeft = this.data[vertical + size]?.[horizontal - 1];
+//             const bottomBorderRight = this.data[vertical + size]?.[horizontal + 1];
+//             const sideBordersCheck = !topBorderCenter || !topBorderLeft || !topBorderRight || !bottomBorderCenter || !bottomBorderLeft || !bottomBorderRight;
+//             for (let i = 0; i < size; i++) {
+//                 const verticalWithOffset: number = vertical + i;
+//                 const columnValue = this.data[verticalWithOffset]?.[horizontal];
+//                 const leftNeighbourColumnValue = this.data[verticalWithOffset]?.[horizontal - 1];
+//                 const rightNeighbourColumnValue = this.data[verticalWithOffset]?.[horizontal + 1];
+//                 if (!columnValue || !leftNeighbourColumnValue || !rightNeighbourColumnValue || sideBordersCheck || columnValue.taken) return false;
+//             }
+//         } else {
+//             const rightBorderCenter = this.data[vertical][horizontal - 1];
+//             const rightBorderTop = this.data[vertical - 1]?.[horizontal - 1];
+//             const rightBorderBottom = this.data[vertical + 1]?.[horizontal - 1];
+//             const leftBorderCenter = this.data[vertical][horizontal + size]
+//             const leftBorderTop = this.data[vertical - 1]?.[horizontal + size]
+//             const leftBorderBottom = this.data[vertical + 1]?.[horizontal + size]
+//             const sideBordersCheck = !rightBorderBottom || !rightBorderCenter || !rightBorderTop || !leftBorderBottom || !leftBorderCenter || !leftBorderTop
+//             for (let i = 0; i < size; i++) {
+//                 const horizontalWithOffset: number = horizontal + i;
+//                 const columnValue = this.data[vertical][horizontalWithOffset];
+//                 const upperNeighbourColumnValue = this.data[vertical - 1]?.[horizontalWithOffset];
+//                 const lowerNeighbourColumnValue = this.data[vertical + 1]?.[horizontalWithOffset];
+//                 if (!columnValue || !upperNeighbourColumnValue || !lowerNeighbourColumnValue || sideBordersCheck || columnValue.taken) return false;
+//             }
+//         }
+//     } else {
+//         if (isRotated) {
+//             for (let i = 0; i < size; i++) {
+//                 const verticalWithOffset: number = vertical + i;
+//                 const columnValue = this.data[verticalWithOffset]?.[horizontal];
+//                 if (!columnValue || columnValue.taken) return false;
+//             }
+//         } else {
+//             for (let i = 0; i < size; i++) {
+//                 const horizontalWithOffset: number = horizontal + i;
+//                 const columnValue = this.data[vertical][horizontalWithOffset];
+//                 if (!columnValue || columnValue.taken) return false;
+//             }
+//         }
+//     }
