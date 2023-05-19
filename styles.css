@@ -77,19 +77,19 @@ section {
     align-self: flex-end;
 }
 
-.one-cell-ship-part {
+.submarine {
     background-color: blueviolet;
 }
 
-.two-cell-ship-part {
+.destroyer {
     background-color: brown;
 }
 
-.three-cell-ship-part {
+.cruiser {
     background-color: darkblue;
 }
 
-.four-cell-ship-part {
+.battleship {
     background-color: darkgreen;
 }
 
